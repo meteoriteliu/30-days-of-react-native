@@ -12,7 +12,7 @@ class WatchFace extends Component{
   static propTypes = {
     sectionTime: React.PropTypes.string.isRequired,
     totalTime: React.PropTypes.string.isRequired,
-  }; 
+  };
 
   render() {
     return(
@@ -30,12 +30,12 @@ class WatchControl extends Component{
     clearRecord: React.PropTypes.func.isRequired,
     startWatch: React.PropTypes.func.isRequired,
     addRecord: React.PropTypes.func.isRequired,
-  }; 
+  };
 
   constructor(props){
     super(props);
     this.state = {
-      watchOn: false, 
+      watchOn: false,
       startBtnText: "启动",
       startBtnColor: "#60B644",
       stopBtnText: "计次",
@@ -62,7 +62,7 @@ class WatchControl extends Component{
         underlayColor:"#eee",
         watchOn: false
       })
-    } 
+    }
   }
 
   _addRecord() {
@@ -97,7 +97,7 @@ class WatchControl extends Component{
 class WatchRecord extends Component{
   static propTypes = {
         record: React.PropTypes.array.isRequired,
-    }; 
+    };
 
   render() {
     let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
@@ -106,7 +106,7 @@ class WatchRecord extends Component{
       <ListView
         style={styles.recordList}
         dataSource={theDataSource}
-        renderRow={(rowData) => 
+        renderRow={(rowData) =>
           <View style={styles.recordItem}>
             <Text style={styles.recordItemTitle}>{rowData.title}</Text>
             <View style={{alignItems: "center"}}>
@@ -154,26 +154,26 @@ export default class extends Component{
   }
 
   _startWatch() {
+    let currentState = {};
     if (this.state.resetWatch) {
-      this.setState({
+      currentState ={
         stopWatch: false,
         resetWatch: false,
         timeAccumulation:0,
         initialTime: (new Date()).getTime()
-      })
+      };
     }else{
-      this.setState({
+      currentState = {
         stopWatch: false,
         initialTime: (new Date()).getTime()
-      })
+      }
     }
     let milSecond, second, minute, countingTime, secmilSecond, secsecond, secminute, seccountingTime;
+    let initialTime = currentState.initialTime;
     let interval = setInterval(
-        () => { 
-          this.setState({
-            currentTime: (new Date()).getTime()
-          })
-          countingTime = this.state.timeAccumulation + this.state.currentTime - this.state.initialTime;
+        () => {
+          currentState.currentTime = (new Date()).getTime();
+          countingTime = this.state.timeAccumulation + currentState.currentTime - initialTime;
           minute = Math.floor(countingTime/(60*1000));
           second = Math.floor((countingTime-6000*minute)/1000);
           milSecond = Math.floor((countingTime%1000)/10);
@@ -181,22 +181,21 @@ export default class extends Component{
           secminute = Math.floor(seccountingTime/(60*1000));
           secsecond = Math.floor((seccountingTime-6000*secminute)/1000);
           secmilSecond = Math.floor((seccountingTime%1000)/10);
-          this.setState({
-            totalTime: (minute<10? "0"+minute:minute)+":"+(second<10? "0"+second:second)+"."+(milSecond<10? "0"+milSecond:milSecond),
-            sectionTime: (secminute<10? "0"+secminute:secminute)+":"+(secsecond<10? "0"+secsecond:secsecond)+"."+(secmilSecond<10? "0"+secmilSecond:secmilSecond),
-          })
-          if (this.state.stopWatch) {
-            this.setState({
-              timeAccumulation: countingTime 
-            })
-            clearInterval(interval)
-          };
+          currentState.totalTime= (minute<10? "0"+minute:minute)+":"+(second<10? "0"+second:second)+"."+(milSecond<10? "0"+milSecond:milSecond);
+          currentState.sectionTime= (secminute<10? "0"+secminute:secminute)+":"+(secsecond<10? "0"+secsecond:secsecond)+"."+(secmilSecond<10? "0"+secmilSecond:secmilSecond);
+          this.setState(currentState);
         },10);
+
+        currentState.interval= interval;
   }
 
   _stopWatch() {
+    let timeAccumulation = this.state.timeAccumulation + (new Date()).getTime() - this.state.initialTime;
+    clearInterval(this.state.interval);
     this.setState({
-      stopWatch: true
+      stopWatch: true,
+      interval: null,
+      timeAccumulation
     })
   }
 

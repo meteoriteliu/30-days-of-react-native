@@ -391,14 +391,14 @@ class ThirtyDaysOfReactNative extends Component{
 
   configureScene(route, routeStack) {
     if (route.type == 'Bottom') {
-      return Navigator.SceneConfigs.FloatFromBottom; 
+      return Navigator.SceneConfigs.FloatFromBottom;
     }
     return Navigator.SceneConfigs.PushFromRight;
   }
 
   routeMapper = {
     LeftButton: (route, navigator, index, navState) =>
-      { 
+      {
         if(route.index > 0) {
           return <TouchableOpacity
             underlayColor='transparent'
@@ -414,11 +414,11 @@ class ThirtyDaysOfReactNative extends Component{
     Title: (route, navigator, index, navState) =>
       { return (<Text style={styles.navTitle}>{route.title}</Text>); },
   };
-  
+
   render(){
     return (
       <Navigator
-        initialRoute={{ 
+        initialRoute={{
           title: '30 Days of RN',
           index: 0,
           display: true,
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     backgroundColor:"#fff",
   },
   touchBoxContainer:{
-    flexDirection: "row", 
+    flexDirection: "row",
     flexWrap:"wrap",
     width: Util.size.width,
     borderTopWidth: Util.pixel,
